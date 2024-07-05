@@ -16,4 +16,8 @@ module.exports = {
       { allowConstantExport: true },
     ],
   },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": "latest"
+  }
 };
