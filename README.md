@@ -68,17 +68,17 @@ A aplicação fornece uma visão abrangente das métricas mais relevantes para o
  `npm run dev:test`: Executa o servidor de desenvolvimento em ambiente de teste
  ```
 
-## Técnologias utilizados para o desenvolvimento do projeto
+## Técnologias utilizados para o desenvolvimento do projeto:
 
-# React: Biblioteca principal para construir interfaces de usuário.
-# React Router DOM: Biblioteca para controle de rotas na aplicação.
-# React Hook Form: Gerenciamento de formulários de forma otimizada.
-# TanStack React Query: Gerenciamento de estados assíncronos e cache de dados.
-# TailwindCSS: Framework de CSS utilitário para estilização.
-# Axios: Cliente HTTP para realizar requisições à API.
-# Zod: Biblioteca para validação de schemas de dados.
-# Radix UI: Componentes acessíveis e de alta qualidade para React.
-# Playwright: Framework para automação de testes end-to-end.
+- React: Biblioteca principal para construir interfaces de usuário.
+- React Router DOM: Biblioteca para controle de rotas na aplicação.
+- React Hook Form: Gerenciamento de formulários de forma otimizada.
+- TanStack React Query: Gerenciamento de estados assíncronos e cache de dados.
+- TailwindCSS: Framework de CSS utilitário para estilização.
+- Axios: Cliente HTTP para realizar requisições à API.
+- Zod: Biblioteca para validação de schemas de dados.
+- Radix UI: Componentes acessíveis e de alta qualidade para React.
+- Playwright: Framework para automação de testes end-to-end.
 
 
 
