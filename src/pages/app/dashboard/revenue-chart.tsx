@@ -1,3 +1,8 @@
+import { useQuery } from "@tanstack/react-query";
+import { subDays } from "date-fns";
+import { Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { DateRange } from "react-day-picker";
 import {
   CartesianGrid,
   Line,
@@ -8,6 +13,7 @@ import {
 } from "recharts";
 import colors from "tailwindcss/colors";
 
+import { getOrderedReceiptPerDay } from "@/api/get-daily-receipt-in-period";
 import {
   Card,
   CardContent,
@@ -15,14 +21,31 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { getOrderedReceiptPerDay } from "@/api/get-daily-receipt-in-period";
+import { DateRangePicker } from "@/components/ui/date-range-picker";
+import { Label } from "@/components/ui/label";
 
 export function RevenueChart() {
-  const { data: orderedReceiptPerDay } = useQuery({
-    queryKey: ["metrics", "ordered-receipt-per-day"],
-    queryFn: getOrderedReceiptPerDay,
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: subDays(new Date(), 7),
+    to: new Date(),
   });
+  const { data: orderedReceiptPerDay } = useQuery({
+    queryKey: ["metrics", "daily-revenue-in-period", dateRange],
+    queryFn: () =>
+      getOrderedReceiptPerDay({
+        from: dateRange?.from,
+        to: dateRange?.to,
+      }),
+  });
+
+  const chartData = useMemo(() => {
+    return orderedReceiptPerDay?.map((charItem) => {
+      return {
+        date: charItem.date,
+        receipt: charItem.receipt / 100,
+      };
+    });
+  }, [orderedReceiptPerDay]);
 
   return (
     <Card className="col-span-6">
@@ -33,11 +56,15 @@ export function RevenueChart() {
           </CardTitle>
           <CardDescription>Receita diária no período</CardDescription>
         </div>
+        <div className="flex items-center gap-3">
+          <Label>Período</Label>
+          <DateRangePicker date={dateRange} onDateChange={setDateRange} />
+        </div>
       </CardHeader>
       <CardContent>
-        {orderedReceiptPerDay && (
+        {chartData ? (
           <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={orderedReceiptPerDay} style={{ fontSize: 12 }}>
+            <LineChart data={chartData} style={{ fontSize: 12 }}>
               <XAxis dataKey="date" tickLine={false} axisLine={false} dy={16} />
               <YAxis
                 stroke="#888"
@@ -61,6 +88,10 @@ export function RevenueChart() {
               />
             </LineChart>
           </ResponsiveContainer>
+        ) : (
+          <div className="flex items-center justify-center h-[248px]">
+            <Loader2 className="animate-spin h-8 w-8 text-muted-foreground" />
+          </div>
         )}
       </CardContent>
     </Card>

@@ -1,4 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
 import { LoaderCircle } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
@@ -6,11 +7,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import * as z from "zod";
 
+import { registerRestaurant } from "@/api/register-restaurant";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useMutation } from "@tanstack/react-query";
-import { registerRestaurant } from "@/api/register-restaurant";
 
 const signupForm = z.object({
   restaurantName: z.string(),
@@ -33,10 +33,9 @@ export function SignUp() {
 
   const navigate = useNavigate();
 
-
   const { mutateAsync: registerRestaurantFn } = useMutation({
     mutationFn: registerRestaurant,
-  })
+  });
 
   async function onSubmit(data: SignUpFormType) {
     try {
@@ -45,7 +44,7 @@ export function SignUp() {
         email: data.email,
         managerName: data.managerName,
         phone: data.phone,
-      }) 
+      });
 
       toast.success("Restaurante cadastrado com sucesso!", {
         action: {
@@ -56,11 +55,9 @@ export function SignUp() {
         },
       });
     } catch {
-      toast.error("Erro ao cadastrar restaurante")
+      toast.error("Erro ao cadastrar restaurante");
     }
-   
 
-  
     console.log(data);
     reset();
   }
@@ -101,7 +98,7 @@ export function SignUp() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Seu e-meail</Label>
+              <Label htmlFor="email">Seu E-mail</Label>
               <Input id="email" type="email" {...register("email")} />
             </div>
             <div className="space-y-2">

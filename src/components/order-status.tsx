@@ -1,3 +1,5 @@
+import React from "react";
+
 export type OrderStatus =
   | "pending"
   | "canceled"
@@ -12,7 +14,7 @@ interface OrderStatusProps {
 const orderStatusMap: Record<OrderStatus, string> = {
   pending: "Pendente",
   canceled: "Cancelado",
-  processing: "Processando",
+  processing: "Em preparo",
   delivering: "Em entrega",
   delivered: "Entregue",
 };
@@ -21,22 +23,44 @@ export function OrderStatus({ status }: OrderStatusProps) {
   return (
     <div className="flex items-center gap-2">
       {status === "pending" && (
-        <span className="h-2 w-2 rounded-full bg-slate-400" />
+        <span
+          data-testid="badge-pending"
+          className="h-2 w-2 rounded-full bg-slate-400"
+        />
       )}
 
       {status === "canceled" && (
-        <span className="h-2 w-2 rounded-full bg-rose-500" />
+        <span
+          data-testid="badge-canceled"
+          className="h-2 w-2 rounded-full bg-rose-500"
+        />
       )}
 
-      {["procesing", "delivering"].includes(status) && (
-        <span className="h-2 w-2 rounded-full bg-amber-500" />
+      {status === "processing" && (
+        <span
+          data-testid="badge-processing"
+          className="h-2 w-2 rounded-full bg-amber-500"
+        />
+      )}
+
+      {status === "delivering" && (
+        <span
+          data-testid="badge-delivering"
+          className="h-2 w-2 rounded-full bg-amber-500"
+        />
       )}
 
       {status === "delivered" && (
-        <span className="h-2 w-2 rounded-full bg-green-500" />
+        <span
+          data-testid="badge-delivered"
+          className="h-2 w-2 rounded-full bg-green-500"
+        />
       )}
 
-      <span className="font-medium text-muted-foreground">
+      <span
+        data-testid="status-text"
+        className="font-medium text-muted-foreground "
+      >
         {orderStatusMap[status]}
       </span>
     </div>

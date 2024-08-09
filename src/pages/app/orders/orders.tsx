@@ -1,4 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
+import { useSearchParams } from "react-router-dom";
+import { z } from "zod";
 
 import { Pagination } from "@/components/pagination";
 import {
@@ -9,13 +12,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import { getOrders } from "../../../api/get-orders";
 import { OrderTableRow } from "./order-tabel-row";
 import { OrderTableFilter } from "./order-table-filter";
-import { useQuery } from "@tanstack/react-query";
-import { getOrders } from "../../../api/get-orders";
-import { useSearchParams } from "react-router-dom";
-import { z } from "zod";
-import { Loader } from "lucide-react";
+import { OrderTableSkeleton } from "./order-table-skeleton";
 
 export function Orders() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -29,7 +29,7 @@ export function Orders() {
     .transform((page) => page - 1)
     .parse(searchParams.get("page") ?? 1);
 
-  const { data: result, isLoading: isLoadingOrderData } = useQuery({
+  const { data: result, isLoading: isLoadingOrders } = useQuery({
     queryKey: ["orders", pageIndex, orderId, customerName, status],
     queryFn: () =>
       getOrders({
@@ -52,47 +52,50 @@ export function Orders() {
       <Helmet title="Pedidos" />
       <div className="flex flex-col gap-4">
         <h1 className="text-3xl font-bold tracking-tight">Pedidos</h1>
-        {isLoadingOrderData ? (
-          <div className="flex items-center justify-center h-[24rem]">
-            <Loader className="w-5 h-5 animate-spin text-muted-foreground" />
+        <div className="space-y-2.5">
+          <OrderTableFilter />
+          <div className="border rounded-md">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[64px]"></TableHead>
+                  <TableHead className="w-[140px]">Identificador</TableHead>
+                  <TableHead className="w-[180px]">Realizado há</TableHead>
+                  <TableHead className="w-[140px]">Status</TableHead>
+                  <TableHead>Cliente</TableHead>
+                  <TableHead className="w-[140px]">Total</TableHead>
+                  <TableHead className="w-[164px]"></TableHead>
+                  <TableHead className="w-[132px]"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isLoadingOrders ? (
+                  <OrderTableSkeleton />
+                ) : (
+                  <>
+                    {result && (
+                      <>
+                        {result?.orders.map((order) => {
+                          return (
+                            <OrderTableRow key={order.orderId} order={order} />
+                          );
+                        })}
+                      </>
+                    )}
+                  </>
+                )}
+              </TableBody>
+            </Table>
           </div>
-        ) : (
-          <div className="space-y-2.5">
-            <OrderTableFilter />
-            <div className="border rounded-md">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-[64px]"></TableHead>
-                    <TableHead className="w-[140px]">Identificador</TableHead>
-                    <TableHead className="w-[180px]">Realizado há</TableHead>
-                    <TableHead className="w-[140px]">Status</TableHead>
-                    <TableHead>Cliente</TableHead>
-                    <TableHead className="w-[140px]">Total</TableHead>
-                    <TableHead className="w-[164px]"></TableHead>
-                    <TableHead className="w-[132px]"></TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {result &&
-                    result.orders.map((order) => {
-                      return (
-                        <OrderTableRow key={order.orderId} order={order} />
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </div>
-            {result && (
-              <Pagination
-                onPageChange={handlePagination}
-                pageIndex={result.meta.pageIndex}
-                totalCount={result.meta.totalCount}
-                perPage={result.meta.perPage}
-              />
-            )}
-          </div>
-        )}
+          {result && (
+            <Pagination
+              onPageChange={handlePagination}
+              pageIndex={result.meta.pageIndex}
+              totalCount={result.meta.totalCount}
+              perPage={result.meta.perPage}
+            />
+          )}
+        </div>
       </div>
     </>
   );
